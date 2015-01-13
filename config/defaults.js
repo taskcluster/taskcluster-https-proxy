@@ -5,7 +5,10 @@ module.exports = {
     publishMetaData:              'false',
 
     // Component name in statistics
-    statsComponent:               'https-proxy'
+    statsComponent:               'https-proxy',
+
+    // Origin allowed to use proxy with authentication
+    allowedOrigins:               'tools.taskcluster.net docs.taskcluster.net'
   },
 
   // Server configuration

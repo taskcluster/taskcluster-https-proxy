@@ -15,6 +15,7 @@ var launch = function(profile) {
       'taskcluster_authBaseUrl',
       'taskcluster_credentials_clientId',
       'taskcluster_credentials_accessToken',
+      'proxy_allowedOrigins',
       'influx_connectionString'
     ],
     filename:     'taskcluster-https-proxy'
@@ -44,6 +45,9 @@ var launch = function(profile) {
   return validatorCreated.then(function() {
     // Create API router and publish reference if needed
     return v1.setup({
+      context: {
+        allowedOrigins: cfg.get('proxy:allowedOrigins').split(/\s+/)
+      },
       validator:        validator,
       authBaseUrl:      cfg.get('taskcluster:authBaseUrl'),
       credentials:      cfg.get('taskcluster:credentials'),

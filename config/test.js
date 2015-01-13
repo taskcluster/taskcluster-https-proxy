@@ -1,7 +1,8 @@
 module.exports = {
-  index: {
+  proxy: {
     publishMetaData:              'false',
-    statsComponent:               'test-https-proxy'
+    statsComponent:               'test-https-proxy',
+    allowedOrigins:               'dummy-origin'
   },
 
   taskcluster: {

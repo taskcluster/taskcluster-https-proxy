@@ -4,6 +4,7 @@ var debug       = require('debug')('routes:v1');
 var assert      = require('assert');
 var base        = require('taskcluster-base');
 var request     = require('superagent');
+var url         = require('url');
 
 // Headers to forward with the request
 var REQUEST_HEADERS_TO_PROXY = [
@@ -59,7 +60,7 @@ var RESPONSE_HEADERS_TO_PROXY = [
 var api = new base.API({
   title:        "HTTPS Proxy API Documentation",
   description: [
-    "HTTPS Proxy for redirecting to HTTP sources, when caller is a web-browser."
+    "HTTPS proxy for TaskCluster web-users that needs to fetch HTTP resources."
   ].join('\n')
 });
 
@@ -69,9 +70,10 @@ module.exports = api;
 /** Get resource from somewhere else */
 api.declare({
   method:         'get',
-  route:          '/fetch/:url(*)',
+  route:          '/fetch/:target(*)',
   name:           'fetchUrl',
-  scopes:         ['https-proxy:fetch-url:<url>'],
+  scopes:         ['https-proxy:fetch-url:<target>'],
+  deferAuth:      true,
   title:          "Fetch URL",
   description: [
     "Fetch URL stream it back. Note that URL must be encoded with ",
@@ -79,9 +81,13 @@ api.declare({
   ].join('\n')
 }, function(req, res) {
   var ctx       = this;
-  var url       = decodeURIComponent(req.params.url);
+  var target    = decodeURIComponent(req.params.target);
+  var origin    = url.parse(req.headers.origin || '');
 
-  if (!req.satisfies({url: req.params.url})) {
+  // Ensure that we're either authenticated, or requesting from an origin that
+  // is allowed
+  if (ctx.allowedOrigins.indexOf(origin.hostname) === -1 &&
+      !req.satisfies({target: req.params.target})) {
     return;
   }
 
@@ -95,7 +101,7 @@ api.declare({
 
   // Execute request and pipe back
   request
-  .get(url)
+  .get(target)
   .set(headers)
   .buffer(false)
   .end(function(resp) {

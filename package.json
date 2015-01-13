@@ -16,12 +16,12 @@
     "debug":                            "2.1.1",
     "taskcluster-base":                 "0.7.3",
     "http-proxy":                       "1.8.1",
-    "superagent":         "*",
-    "superagent-promise":   "*"
+    "superagent":                       "*"
   },
   "devDependencies": {
     "mocha":                            "2.1.0",
-    "taskcluster-client":               "0.18.1"
+    "taskcluster-client":               "0.18.1",
+    "superagent-promise":               "*"
   },
   "engines": {
     "node":                             "0.10.x"
